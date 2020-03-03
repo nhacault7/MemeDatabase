@@ -24,20 +24,39 @@ public class Meme implements Comparable, Serializable {
             String dateCreated, 
             LinkedList<String> keywords) {
         
+        this.pictureFile    = pictureFile;
+        this.author         = author;
+        this.dateCreated    = dateCreated;
         
-        this.pictureFile = pictureFile;
-        this.author = author;
-        this.dateCreated = dateCreated;
-        this.keywords = keywords;
+        if (keywords != null) {
+            this.keywords = new LinkedList<>();
+            for (int i = 0; i < keywords.size(); i++) {
+                this.keywords.add(keywords.get(i));
+            }
+        }
     }
     
+    public String toString() {
+        String text = author + " (";
+        text += dateCreated + "): ";
+        if (keywords == null || keywords.isEmpty()) {
+            text += "no keywords";
+        } 
+        else {
+            text += "keywords = ";
+            for (int i = 0; i < keywords.size()-1; i++) {
+                text += keywords.get(i) + ";";
+            }
+            text += keywords.get(keywords.size()-1);
+        }
+        return text;
+    }
 
     @Override
-    public int compareTo(Object o) {
-        return 0;
+    public int compareTo(Object object) {
+        Meme that = (Meme)object;
+        String value1 = this.toString();
+        String value2 = that.toString();
+        return value1.compareToIgnoreCase(value2);
     }
-    
-    
-    
-    
 }
