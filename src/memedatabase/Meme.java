@@ -15,10 +15,10 @@ import java.io.Serializable;
  */
 public class Meme implements Comparable, Serializable {
     
-    private File pictureFile;
-    private String author;
-    private String dateCreated;
-    private LinkedList<String> keywords;
+    public File pictureFile;
+    public String author;
+    public String dateCreated;
+    public LinkedList<String> keywords;
     
     public Meme(File pictureFile, String author, 
             String dateCreated, 

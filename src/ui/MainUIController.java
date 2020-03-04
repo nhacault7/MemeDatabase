@@ -15,6 +15,7 @@ import javax.swing.ImageIcon;
 import javax.swing.JLabel;
 import javax.swing.JTextField;
 import memedatabase.Meme;
+import tools.Images;
 import tools.Search;
 import tools.Sort;
 
@@ -95,41 +96,138 @@ public class MainUIController {
 
     void deleteSelectedKeyward() {
         int index = keywordsList.getSelectedIndex();
-        
+        if (index != -1) {
+            if(dialog.yesNo("are you sure you want to " 
+                    + "delete the selected keyword?")) {
+                keywordsList.remove(index);
+                if(keywords != null) keywords.remove(index);
+            }
+        }
     }
     
     void saveMeme() {
-
+        date = dateCreatedTextbox.getText();
+        author = authorTextbox.getText();
+        if (date == null) {
+            dialog.output("Please enter a date!");
+            dateCreatedTextbox.requestFocus();
+        }
+        else if (author == null) {
+        dialog.output("Please enter an author!");
+        authorTextbox.requestFocus();
+        }
+        else if (file == null) {
+            dialog.output("Please select an image file!");
+            memeImageLabel.requestFocus();
+        }
+        else {
+            Meme meme = new Meme(file, author, date, keywords);
+            list.add(meme);
+            memesList.add(meme.toString());
+            clearFields();
+        }
+      
     }
     
     void clearFields() {
-
+        memeImageLabel.setIcon(null);
+        dateCreatedTextbox.setText("");
+        authorTextbox.setText("");
+        keywordTextbox.setText("");
+        keywordsList.removeAll();
+        date = null;
+        author = null;
+        file = null;
+        if (keywords != null) {
+            keywords.clear();
+            keywords = null;
+        }
     }
 
     void editSelectedMeme() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        int index = memesList.getSelectedIndex();
+        if (index != -1) {
+            clearFields();
+            Meme meme = list.get(index);
+            file = meme.pictureFile;
+            author = meme.author;
+            date = meme.dateCreated;
+            if(meme.keywords != null) {
+                keywords = new LinkedList<>();
+                for (int i = 0; i < meme.keywords.size(); i++) {
+                    keywords.add(meme.keywords.get(i));
+                }
+            }
+            String path = file.getAbsolutePath();
+            Icon icon = new ImageIcon(path);
+            memeImageLabel.setIcon(icon);
+            Images.resizeToContainer(memeImageLabel);
+            dateCreatedTextbox.setText(date);
+            authorTextbox.setText(author);
+            if (keywords != null) {
+                for (int i = 0; i < keywords.size(); i++) {
+                    keywordsList.add(keywords.get(i));
+                }
+            }
+            memesList.remove(index);
+            list.remove(index);
+        }
     }
 
     void deleteSelectedMeme() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        int index = memesList.getSelectedIndex();
+        if (index != -1) {
+            if (dialog.yesNo("Are you sure you want to " 
+                    + "delete the selected meme?")) {
+                memesList.remove(index);
+                list.remove(index);
+            }
+        }
     }
 
     void sortMemes() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        sort.bubble(list);
+        memesList.removeAll();
+        for (int i = 0; i < list.size(); i++) {
+            memesList.add(list.get(i).toString());
+        }
     }
 
     void searchMemes() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        String searchText = dialog.input("Enter word to search for");
+        searchText = searchText.toLowerCase();
+        int index = -1;
+        for (int i = 0; i < list.size(); i++) {
+            Meme meme = list.get(i);
+            String words = meme.toString();
+            words = words.toLowerCase();
+            if (words.contains(searchText)) {
+                index = i;
+                i = list.size();
+            }
+        }
+        if (index != -1) memesList.select(index);
+        else dialog.output(searchText + " not found!");
     }
+        
 
     void saveMemeList() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        file = dialog.saveFile(userInterface);
+        if (file != null && list != null) fileHandler.saveObject(list, file);
     }
 
     void openMemeList() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        file = dialog.openFile(userInterface);
+        if (file != null) {
+            list = (LinkedList<Meme>) fileHandler.openObject(file);
+            if (list != null) {
+                memesList.removeAll();
+                for (int i = 0; i < list.size(); i++) {
+                    Meme meme = list.get(i);
+                    String text = meme.toString();
+                    memesList.add(text);
+                }
+            }
+        }
     }
-
-    
-    
 }
