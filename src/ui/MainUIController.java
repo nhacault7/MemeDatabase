@@ -25,6 +25,7 @@ import tools.Sort;
  */
 public class MainUIController {
 
+    // properties linked from the view
     private JLabel                          memeImageLabel;
     private JTextField                      dateCreatedTextbox;
     private JTextField                      authorTextbox; 
@@ -33,22 +34,34 @@ public class MainUIController {
     private List                            memesList;
     private MainUI                          userInterface;
     
+    // properties for use when one meme is created
     private File                            file = null;
     private String                          keyword = null;
     private String                          author = null;
     private String                          date = null;
     private LinkedList<String>              keywords = null;
     
+    // property to store all memes in a dynamic list
     private LinkedList<Meme>                list = new LinkedList<>();
     
+    // properties for adding functions like searching, sorting, dialogs, files, etc.
     private Dialogs                         dialog = new Dialogs
                                             ("Meme database", userInterface);
-    
     private Search                          search = new Search();
     private Sort                            sort = new Sort();
-    
     private FileHandler<LinkedList<Meme>>   fileHandler = new FileHandler<>();
     
+    /**
+     * Class constructor, set class properties
+     * 
+     * @param memeImageLabel label for pictures
+     * @param dateCreatedTextbox textbox for date
+     * @param authorTextbox textbox for author name
+     * @param keywordTextbox textbox to enter a keyword
+     * @param keywordsListlistbox for all entered keywords
+     * @param memesList listbox for all entered memes
+     * @param userInterface the frame user interface
+     */
     MainUIController(JLabel memeImageLabel, 
             JTextField dateCreatedTextbox, 
             JTextField authorTextbox, 
@@ -56,7 +69,7 @@ public class MainUIController {
             List keywordsList, 
             List memesList, 
             MainUI userInterface) {
-        
+        // connect (link) all parameters to global properties
         this.memeImageLabel         = memeImageLabel;
         this.dateCreatedTextbox     = dateCreatedTextbox;
         this.authorTextbox          = authorTextbox;
@@ -64,18 +77,23 @@ public class MainUIController {
         this.keywordsList           = keywordsList;
         this.memesList              = memesList;
         this.userInterface          = userInterface;
-        
+        // set some values for the user interface and display
         userInterface.setSize(596, 766);
         userInterface.setResizable(false);
         userInterface.setLocationRelativeTo(null);
         userInterface.setVisible(true);
     }
 
+    /**
+     * User has clicked a button and wants to select a meme image
+     */
     void selectImage() {
-        file = dialog.openFile(userInterface);
-        if (file != null) {
-            Icon image = new ImageIcon(file.getAbsolutePath());
-            memeImageLabel.setIcon(image);
+        file = dialog.openFile(userInterface);          // get file from open dialog
+        if (file != null) {                             // valid file selected
+            String path = file.getAbsolutePath();       // get path to the file
+            Icon icon = new ImageIcon(path);            // create icon to display
+            memeImageLabel.setIcon(icon);               // assign icon to label
+            Images.resizeToContainer(memeImageLabel);   // resize to label
         }
     }
 
